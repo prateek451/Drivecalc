@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DriveCalc | EV & Fuel Range Calculator</title>
+<meta name="description" content="DriveCalc helps you estimate your electric vehicle range and fuel car mileage based on battery, fuel price, and driving conditions.">
+<style>
+    body { font-family: 'Roboto', sans-serif; background:#f4f4f4; margin:0; color:#333; line-height:1.5; }
+    header { background:#1e90ff; color:#fff; padding:20px; text-align:center; }
+    header h1 { margin-bottom:5px; }
+    nav { background:#fff; padding:10px 20px; box-shadow:0 2px 4px rgba(0,0,0,0.1); display:flex; justify-content:center; gap:20px; }
+    nav a { text-decoration:none; color:#1e90ff; font-weight:bold; }
+    section { max-width:700px; margin:20px auto; background:#fff; padding:20px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+    h2 { color:#1e90ff; margin-bottom:10px; text-align:center; }
+    label { display:block; margin:10px 0 5px; }
+    input, select { width:100%; padding:10px; margin-bottom:10px; border-radius:5px; border:1px solid #ccc; }
+    input[type=checkbox] { width:auto; }
+    .output { background:#f1f1f1; padding:15px; border-radius:5px; font-weight:bold; margin-top:10px; }
+    footer { text-align:center; font-size:0.85em; padding:20px; color:#666; }
+    .note { font-size:0.85em; color:#555; margin-top:10px; }
+    button { background:#1e90ff; color:#fff; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; margin-top:10px; display:block; width:100%; }
+    button:hover { background:#0f70d1; }
+</style>
+</head>
+<body>
+
+<header>
+    <h1>DriveCalc</h1>
+    <p>Estimate your vehicle’s mileage and range based on battery, fuel, and driving conditions</p>
+</header>
+
+<nav>
+    <a href="#fuel-calculator">Fuel Calculator</a>
+    <a href="#ev-calculator">EV Range Calculator</a>
+    <a href="#guide">Step-by-Step Guide</a>
+</nav>
+
+<section id="fuel-calculator">
+    <h2>Fuel Car Mileage Calculator</h2>
+    <label for="distance">Distance Traveled (km):</label>
+    <input type="number" id="distance" value="100">
+
+    <label for="fuel">Fuel Consumed (liters):</label>
+    <input type="number" id="fuel" value="10">
+
+    <label for="fuelPrice">Fuel Price (per liter):</label>
+    <input type="number" id="fuelPrice" value="100">
+
+    <label for="drivingType">Driving Type:</label>
+    <select id="drivingType">
+        <option value="city">City</option>
+        <option value="highway">Highway</option>
+    </select>
+
+    <label><input type="checkbox" id="ac"> AC On</label>
+
+    <div class="output" id="fuelOutput">Mileage: 0 km/l | Cost per km: 0 | Total cost: 0</div>
+</section>
+
+<section id="ev-calculator">
+    <h2>Electric Vehicle Range Calculator</h2>
+    <label for="batteryCapacity">Battery Capacity (kWh):</label>
+    <input type="number" id="batteryCapacity" value="50">
+
+    <label for="chargePercent">State of Charge (%):</label>
+    <input type="number" id="chargePercent" value="80">
+
+    <label for="efficiency">Energy Consumption (Wh/km):</label>
+    <input type="number" id="efficiency" value="150">
+
+    <label for="electricityPrice">Electricity Price (per kWh):</label>
+    <input type="number" id="electricityPrice" value="8">
+
+    <label for="evDrivingType">Driving Type:</label>
+    <select id="evDrivingType">
+        <option value="city">City</option>
+        <option value="highway">Highway</option>
+    </select>
+
+    <label><input type="checkbox" id="evAC"> AC On</label>
+    <label for="load">Load:</label>
+    <select id="load">
+        <option value="light">1–2 people</option>
+        <option value="full">Full Load</option>
+    </select>
+
+    <div class="output" id="evOutput">Estimated Range: 0 km | Safe Range: 0 km | Cost per km: 0</div>
+</section>
+
+<section id="guide">
+    <h2>Step-by-Step Guide</h2>
+    <p class="note">
+        <strong>Fuel Calculator:</strong> Enter distance traveled, fuel consumed, fuel price, driving type, and AC usage to estimate your mileage, cost per km, and total fuel cost.<br>
+        <strong>EV Range Calculator:</strong> Enter battery capacity, state of charge, energy consumption, electricity price, driving type, AC usage, and load to estimate your realistic EV range and cost per km.<br>
+        Adjust driving type and AC usage to see how real-world conditions affect your vehicle.
+    </p>
+</section>
+
+<footer>
+    &copy; 2026 DriveCalc | Estimates are for informational purposes only.
+</footer>
+
+<script>
+    // Fuel Calculator
+    const distance = document.getElementById('distance');
+    const fuel = document.getElementById('fuel');
+    const fuelPrice = document.getElementById('fuelPrice');
+    const drivingType = document.getElementById('drivingType');
+    const ac = document.getElementById('ac');
+    const fuelOutput = document.getElementById('fuelOutput');
+
+    function calcFuel() {
+        let d = parseFloat(distance.value);
+        let f = parseFloat(fuel.value) || 0.1; 
+        let price = parseFloat(fuelPrice.value);
+        let mile = d/f;
+
+        if(drivingType.value==='city') mile *=0.9;
+        if(drivingType.value==='highway') mile *=1.05;
+        if(ac.checked) mile *=0.9;
+
+        let costPerKm = price/mile;
+        let total = d*costPerKm;
+
+        fuelOutput.innerText = `Mileage: ${mile.toFixed(1)} km/l | Cost per km: ${costPerKm.toFixed(2)} | Total cost: ${total.toFixed(2)}`;
+    }
+
+    distance.addEventListener('input', calcFuel);
+    fuel.addEventListener('input', calcFuel);
+    fuelPrice.addEventListener('input', calcFuel);
+    drivingType.addEventListener('change', calcFuel);
+    ac.addEventListener('change', calcFuel);
+
+    calcFuel();
+
+    // EV Calculator
+    const batteryCapacity = document.getElementById('batteryCapacity');
+    const chargePercent = document.getElementById('chargePercent');
+    const efficiency = document.getElementById('efficiency');
+    const electricityPrice = document.getElementById('electricityPrice');
+    const evDrivingType = document.getElementById('evDrivingType');
+    const evAC = document.getElementById('evAC');
+    const load = document.getElementById('load');
+    const evOutput = document.getElementById('evOutput');
+
+    function calcEV() {
+        let b = parseFloat(batteryCapacity.value) || 1;
+        let c = parseFloat(chargePercent.value)/100;
+        let e = parseFloat(efficiency.value);
+        let price = parseFloat(electricityPrice.value);
+        let range = (b*c)/(e/1000);
+
+        if(evDrivingType.value==='city') range*=1.05;
+        if(evDrivingType.value==='highway') range*=0.95;
+        if(evAC.checked) range*=0.9;
+        if(load.value==='full') range*=0.95;
+
+        let safeRange = range*0.8;
+        let costPerKm = (b*c*price)/range;
+
+        evOutput.innerText = `Estimated Range: ${range.toFixed(1)} km | Safe Range: ${safeRange.toFixed(1)} km | Cost per km: ${costPerKm.toFixed(2)}`;
+    }
+
+    batteryCapacity.addEventListener('input', calcEV);
+    chargePercent.addEventListener('input', calcEV);
+    efficiency.addEventListener('input', calcEV);
+    electricityPrice.addEventListener('input', calcEV);
+    evDrivingType.addEventListener('change', calcEV);
+    evAC.addEventListener('change', calcEV);
+    load.addEventListener('change', calcEV);
+
+    calcEV();
+</script>
+
+</body>
+</html>
